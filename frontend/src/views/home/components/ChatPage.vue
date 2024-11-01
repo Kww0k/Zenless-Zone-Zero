@@ -2,7 +2,7 @@
   <div style="width: 100%;display: flex;gap: 80px;height: 100%">
     <div style="width: 280px;background-color: rgba(0, 0, 0, 0.7);">
       <template v-for="item in roomList">
-        <el-badge v-if="item !== room" style="width: 100%;margin-bottom: 16px" :value="item.countMessage" class="item">
+        <el-badge v-if="item !== room && item.countMessage > 0" style="width: 100%;margin-bottom: 16px" :value="item.countMessage" class="item">
           <div  @click="changeRoom(item)" style="
       cursor:pointer;background-color: #4C4D4F; box-sizing: border-box;
       padding:20px;display: flex;gap: 10px;align-items: center;border-bottom: 1px solid #eeeeee">
@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, onBeforeUnmount, watch, nextTick, defineProps} from 'vue';
+import {ref, onMounted, onBeforeUnmount, watch, nextTick} from 'vue';
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 
@@ -138,6 +138,7 @@ onMounted(() => {
 })
 
 const changeRoom = (item) => {
+  item.countMessage = 0
   request.get("/message/listMessage/" + item.room.id).then(res => {
     if (res.code === 200) {
       messages.value = res.data
