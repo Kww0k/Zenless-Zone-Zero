@@ -2,6 +2,7 @@ package com.backend.service;
 
 import com.backend.domain.RestBean;
 import com.backend.domain.entity.Message;
+import com.backend.domain.vo.ListVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -17,4 +18,7 @@ public interface MessageService extends IService<Message> {
 
     RestBean<List<Message>> listMessage(Integer roomId);
 
+    RestBean<ListVO<Message>> list(Integer pageNum, Integer pageSize, String content);
+
+    RestBean<Void> deleteMessage(Integer id);
 }

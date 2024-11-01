@@ -21,6 +21,7 @@ const menuItems= [
     title: "系统管理",
     children: [
       { name: "用户管理", path: '/control/user' },
+      { name: "消息管理", path: '/control/message' },
     ]
   }
 ]
@@ -34,7 +35,6 @@ onMounted(() => {
 <template>
   <div style="width: 100%;height: 55px;box-sizing: border-box;border-bottom: 1px solid #4C4D4F">
     <div style="width: 1500px;margin: auto;display: flex;align-items: center;justify-content: space-between">
-
     </div>
   </div>
 <div style="width: 1500px;display: flex;margin: 20px auto auto;">

@@ -10,6 +10,7 @@ import LoginView from "@/views/login/LoginView.vue";
 import EventControlPage from "@/views/control/components/EventControlPage.vue";
 import ReviewPage from "@/views/control/components/ReviewPage.vue";
 import ChatPage from "@/views/home/components/ChatPage.vue";
+import MessagePage from "@/views/control/components/MessagePage.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,6 +67,11 @@ const router = createRouter({
                     path: '/control/review',
                     name: 'reviewControlPage',
                     component: ReviewPage
+                },
+                {
+                    path: '/control/message',
+                    name: 'messageControlPage',
+                    component: MessagePage
                 }
             ]
         }

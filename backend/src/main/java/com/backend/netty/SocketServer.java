@@ -106,28 +106,27 @@ public class SocketServer {
                     // 获取用户信息和房间信息
                     LoginUser loginUser = jwtUtils.toUser(jwt);
                     Account account = loginUser.getAccount();
+                    Room room = jsonMessage.getObject("room", Room.class);
+
+                    Map<Integer, Channel> roomChannelMap = userChannels.get(room);
+                    if (roomChannelMap == null) {
+                        roomChannelMap = new ConcurrentHashMap<>();
+                        roomChannelMap.put(account.getId(), ctx.channel());
+                    } else {
+                        roomChannelMap.put(account.getId(), ctx.channel());
+                    }
+                    userChannels.put(room, roomChannelMap);
+                    log.info("id为：{}的用户在房间：{}中。", account.getId(), room.getId());
 
                     if (jsonMessage.get("type").equals("open")) { // 连接时发起请求，确保连接成功
                         backMessage = RestBean.success("用户" + account.getNickname() + "连接成功").toJsonString();
-                        log.info("用户{}连接成功，id为：{}， 当前用户数量为：{}", account.getNickname(), account.getId(), getUniqueChannelCount() + 1);
+                        log.info("用户{}连接成功，id为：{}， 当前用户数量为：{}", account.getNickname(), account.getId(), getUniqueChannelCount());
                     }
                     else if (jsonMessage.get("type").equals("message")) { // 发送信息
                         String content = (String) jsonMessage.get("message");
                         if (StringUtils.hasText(content)) {
                             Integer toUserId = (Integer) jsonMessage.get("toUserId");
                             if (toUserId != null) {
-                                Room room = jsonMessage.getObject("room", Room.class);
-
-                                Map<Integer, Channel> roomChannelMap = userChannels.get(room);
-                                if (roomChannelMap == null) {
-                                    roomChannelMap = new ConcurrentHashMap<>();
-                                    roomChannelMap.put(account.getId(), ctx.channel());
-                                } else {
-                                    roomChannelMap.put(account.getId(), ctx.channel());
-                                }
-                                userChannels.put(room, roomChannelMap);
-                                log.info("id为：{}的用户在房间：{}中。", account.getId(), room.getId());
-
                                 if (!toUserId.equals(account.getId())) { // 检查发起人和接收人是否一致
                                     // 寻找接收人的channel，如果在线则放入房间
                                     for (Map<Integer, Channel> channelMap : userChannels.values()) {

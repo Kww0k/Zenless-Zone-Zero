@@ -86,11 +86,11 @@ const save = () => {
 
 <template>
   <div style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">
-    评论管理
+    用户管理
   </div>
 
   <div style="margin-bottom: 20px; font-size: 16px;">
-    <p style="color: #555;">这里是评论管理模块，您可以在此查看和管理所有评论信息。</p>
+    <p style="color: #555;">这里是用户管理模块，您可以在此查看和管理所有用户信息。</p>
   </div>
 
   <div style="margin-bottom: 20px;">

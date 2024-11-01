@@ -2,6 +2,7 @@ package com.backend.domain.entity;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,4 +39,9 @@ public class Message  {
     private Integer createBy;
 
     private Date createTime;
+
+    @TableField(exist = false)
+    private String fromUserName;
+    @TableField(exist = false)
+    private String toUserName;
 }

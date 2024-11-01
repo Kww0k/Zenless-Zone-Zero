@@ -2,17 +2,17 @@
   <div style="width: 100%;display: flex;gap: 60px;height: 100%">
     <el-scrollbar style="width: 280px;background-color: rgba(0, 0, 0, 0.7);">
       <template v-for="item in roomList">
-        <el-badge v-if="item !== room && item.countMessage > 0" style="width: 100%;margin-bottom: 16px"
+        <el-badge v-if="item.room.id !== room.room.id && item.countMessage > 0" style="width: 100%;margin-bottom: 16px"
                   :value="item.countMessage" class="item">
           <div @click="changeRoom(item)" class="chat-box"
-               :class="{'chat-box-simple': item !== room, 'chat-box-check': item === room}">
+               :class="{'chat-box-simple': item.room.id !== room.room.id, 'chat-box-check': item.room.id === room.room.id}">
             <img :src="item.toUser.avatarUrl"
                  style="width: 45px;height: 45px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;"
                  alt="avatar"/>
-            <div style="flex: 1 0 0">
-              <el-text truncated>{{ item.toUser.nickname }}</el-text>
+            <div>
+              <el-text style="width: 120px" truncated>{{ item.toUser.nickname }}</el-text>
               <br>
-              <el-text truncated>{{ item.message.content }}</el-text>
+              <el-text style="width: 120px" truncated>{{ item.message.content }}</el-text>
             </div>
             <div style="font-size: 12px;display: flex;align-items: flex-start;height: 45px">
               {{ formatDate(item.message.createTime) }}
@@ -21,14 +21,14 @@
         </el-badge>
 
         <div v-else @click="changeRoom(item)" class="chat-box"
-             :class="{'chat-box-simple': item !== room, 'chat-box-check': item === room}">
+             :class="{'chat-box-simple': item.room.id !== room, 'chat-box-check': item.room.id === room.room.id}">
           <img :src="item.toUser.avatarUrl"
                style="width: 45px;height: 45px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;"
                alt="avatar"/>
-          <div style="flex: 1 0 0">
-            <el-text truncated>{{ item.toUser.nickname }}</el-text>
+          <div>
+            <el-text style="width: 120px" truncated>{{ item.toUser.nickname }}</el-text>
             <br>
-            <el-text truncated>{{ item.message.content }}</el-text>
+            <el-text style="width: 120px" truncated>{{ item.message.content }}</el-text>
           </div>
           <div style="font-size: 12px;display: flex;align-items: flex-start;height: 45px">
             {{ formatDate(item.message.createTime) }}
@@ -37,21 +37,15 @@
       </template>
     </el-scrollbar>
 
-    <div v-if="room" style="background-color: rgba(0, 0, 0, 0.7);flex: 1 0 0;box-sizing: border-box;padding: 20px;">
+    <div v-if="room" style="background-color: rgba(0, 0, 0, 0.7);flex: 1 0 0;box-sizing: border-box;padding: 20px">
       <div>
-        <div style="height: 40px;display: flex;align-items: center;font-size: 18px">{{ room.toUser.nickname }}</div>
+        <div style="height: 40px;display: flex;align-items: center;font-size: 18px;border-bottom: 1px solid #4C4D4F">{{ room.toUser.nickname }}</div>
         <el-scrollbar id="scrollbar" ref="scrollbar"
                       style="height: calc(100vh - 180px - 40px - 40px - 120px);box-sizing: border-box;padding-left: 20px;padding-right: 20px">
           <div v-for="(msg, index) in messages" :key="index">
             <div
-                :style="{
-                   maxWidth: '80%',
-                   marginLeft: '20%',
-                   display: 'flex',
-                   gap: '8px',
-                   justifyContent: 'right',
-                   marginBottom: index < messages.length - 1 ? '8px' : '0'
-                }"
+                class="message-box"
+                style="margin-left: 20%;justify-content: right"
                 v-if="msg.createBy === userinfo.id">
               <el-tooltip
                   class="box-item"
@@ -68,12 +62,7 @@
                    alt="avatar"/>
             </div>
             <div
-                :style="{
-                   maxWidth: '80%',
-                   display: 'flex',
-                   gap: '8px',
-                   marginBottom: index < messages.length - 1 ? '8px' : '0'
-                }"
+                class="message-box"
                 v-else>
               <img :src="room.toUser.avatarUrl"
                    style="width: 35px;height: 35px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;"
@@ -134,6 +123,7 @@ onMounted(() => {
               if (socket.value && socket.value.readyState === WebSocket.OPEN) {
                 socket.value.send(JSON.stringify({
                   "type": "open",
+                  "room": room.value.room,
                   "token": "Bearer " + sessionStorage.getItem('token')
                 }));
               }
@@ -143,10 +133,52 @@ onMounted(() => {
               let result = JSON.parse(event.data)
               if (result.code === 200) {
               } else if (result.code === 201) {
-                messages.value.push(result.data);
+                const createTimeUTC = new Date(result.data.createTime);
+                const createTimeChina = new Date(createTimeUTC.getTime() + 8 * 60 * 60 * 1000);
+                result.data.createTime = createTimeChina.toISOString();
+
+                if (result.data.roomId === room.value.id) {
+                  const room = roomList.value.find(info => info.room.id === result.data.roomId);
+                  if (room) {
+                    room.message = result.data
+                  } else {
+                    // todo 新增一个roomList，得获取
+                  }
+                  messages.value.push(result.data);
+                } else {
+                  const room = roomList.value.find(info => info.room.id === result.data.roomId);
+                  if (room) {
+                    room.message = result.data
+                    room.countMessage += 1
+                  } else {
+                    // todo 新增一个roomList，得获取
+                  }
+                }
+                roomList.value.sort((a, b) => {
+                  return new Date(b.message.createTime) - new Date(a.message.createTime);
+                });
               } else if (result.code === 202) {
+                const room = roomList.value.find(info => info.room.id === result.data.roomId);
+                if (room) {
+                  // 假设 createTime 是一个 ISO 8601 字符串或类似格式的日期字符串
+                  const createTimeUTC = new Date(result.data.createTime);
+
+                  // 将时间增加8小时
+                  const createTimeChina = new Date(createTimeUTC.getTime() + 8 * 60 * 60 * 1000);
+
+                  // 更新 createTime 为中国时间
+                  result.data.createTime = createTimeChina.toISOString(); // 或者你可以选择其他格式
+                  room.message = result.data
+                } else {
+                  console.error("Room not found");
+                }
+
                 messages.value.push(result.data);
-                message.value = ''; // 清空输入框
+                message.value = '';
+
+                roomList.value.sort((a, b) => {
+                  return new Date(b.message.createTime) - new Date(a.message.createTime);
+                });
               } else if (result.code === 401) {
                 status.value = '连接失败'
               } else {
@@ -214,22 +246,22 @@ onBeforeUnmount(() => {
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   const today = new Date();
-  const newDate = new Date(dateString)
 
-  today.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
+  const year = date.getUTCFullYear();
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // 月份从0开始
+  const day = date.getUTCDate().toString().padStart(2, '0');
 
-  if (date.getTime() === today.getTime()) {
+  const toDayYear = today.getUTCFullYear();
+  const toDayMonth = (today.getUTCMonth() + 1).toString().padStart(2, '0'); // 月份从0开始
+  const toDayDay = today.getUTCDate().toString().padStart(2, '0');
+
+  if (year === toDayYear && month === toDayMonth && day === toDayDay) {
     // 如果是今天，获取时分秒
-    const hours = newDate.getUTCHours().toString().padStart(2, '0');
-    const minutes = newDate.getUTCMinutes().toString().padStart(2, '0');
-    const seconds = newDate.getUTCSeconds().toString().padStart(2, '0');
+    const hours = date.getUTCHours().toString().padStart(2, '0');
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+    const seconds = date.getUTCSeconds().toString().padStart(2, '0');
     return `${hours}:${minutes}:${seconds}`;
   } else {
-    // 否则，获取年月日
-    const year = newDate.getUTCFullYear();
-    const month = (newDate.getUTCMonth() + 1).toString().padStart(2, '0'); // 月份从0开始
-    const day = newDate.getUTCDate().toString().padStart(2, '0');
     return `${year}/${month}/${day}`;
   }
 }
@@ -237,21 +269,21 @@ const formatDate = (dateString) => {
 const formatDateMessage = (dateString) => {
   const date = new Date(dateString);
   const today = new Date();
-  const newDate = new Date(dateString)
 
-  today.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
-  const hours = newDate.getUTCHours().toString().padStart(2, '0');
-  const minutes = newDate.getUTCMinutes().toString().padStart(2, '0');
-  const seconds = newDate.getUTCSeconds().toString().padStart(2, '0');
-  if (date.getTime() === today.getTime()) {
-    // 如果是今天，获取时分秒
+  const year = date.getUTCFullYear();
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // 月份从0开始
+  const day = date.getUTCDate().toString().padStart(2, '0');
+  const hours = date.getUTCHours().toString().padStart(2, '0');
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  const seconds = date.getUTCSeconds().toString().padStart(2, '0');
+
+  const toDayYear = today.getUTCFullYear();
+  const toDayMonth = (today.getUTCMonth() + 1).toString().padStart(2, '0'); // 月份从0开始
+  const toDayDay = today.getUTCDate().toString().padStart(2, '0');
+
+  if (year === toDayYear && month === toDayMonth && day === toDayDay) {
     return `${hours}:${minutes}:${seconds}`;
   } else {
-    // 否则，获取年月日
-    const year = newDate.getUTCFullYear();
-    const month = (newDate.getUTCMonth() + 1).toString().padStart(2, '0'); // 月份从0开始
-    const day = newDate.getUTCDate().toString().padStart(2, '0');
     return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
   }
 }
@@ -261,7 +293,7 @@ const formatDateMessage = (dateString) => {
 .chat-box {
   cursor: pointer;
   box-sizing: border-box;
-  padding: 20px;
+  padding: 10px 20px;
   display: flex;
   gap: 10px;
   align-items: center;
@@ -280,6 +312,17 @@ const formatDateMessage = (dateString) => {
   color: #1c1c1c;
   background-color: #eeeeee;
   border: 1px solid #4C4D4F
+}
+.message-box {
+  max-width: 80%;
+  display: flex;
+  gap: 8px;
+}
+.message-box:first-child {
+  margin-top: 8px;
+}
+.message-box:not(:last-child) {
+  margin-bottom: 8px;
 }
 </style>
 
