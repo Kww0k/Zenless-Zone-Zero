@@ -36,6 +36,15 @@ const changeList = () => {
     list.value.push(null)  // 你可以根据需要插入不同的占位符，如 null 或 "" 等
   }
 
+  if (list.value[0] === null) {
+    list.value[0] = {
+      id: 0,
+      title: '您还未参与活动，快去报名参加您感兴趣的活动吧',
+      preview: 'http://localhost:8080/file/download/d2778a474daa44f8a0f80fc9c38bb777.png',
+      content: '您还未参与活动，快去报名参加您感兴趣的活动吧'
+    };
+  }
+
   listSelect.value = 0
 }
 </script>
@@ -138,7 +147,7 @@ const changeList = () => {
                   <div v-if="item === null && index >= 1">
                     EMPTY
                   </div>
-                  <div v-else>
+                  <div style="white-space: nowrap;overflow: hidden; text-overflow: ellipsis;width: 520px" v-else>
                     {{ item.title }}
                   </div>
                 </div>

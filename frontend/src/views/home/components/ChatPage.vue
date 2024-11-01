@@ -1,23 +1,41 @@
 <template>
-  <div style="width: 100%;display: flex;gap: 80px;height: 100%">
-    <div style="width: 280px;background-color: rgba(0, 0, 0, 0.7);">
+  <div style="width: 100%;display: flex;gap: 60px;height: 100%">
+    <el-scrollbar style="width: 280px;background-color: rgba(0, 0, 0, 0.7);">
       <template v-for="item in roomList">
-        <el-badge v-if="item !== room && item.countMessage > 0" style="width: 100%;margin-bottom: 16px" :value="item.countMessage" class="item">
-          <div  @click="changeRoom(item)" style="
-      cursor:pointer;background-color: #4C4D4F; box-sizing: border-box;
-      padding:20px;display: flex;gap: 10px;align-items: center;border-bottom: 1px solid #eeeeee">
-            <img :src="item.toUser.avatarUrl" style="width: 35px;height: 35px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;" alt="avatar"/>
+        <el-badge v-if="item !== room && item.countMessage > 0" style="width: 100%;margin-bottom: 16px"
+                  :value="item.countMessage" class="item">
+          <div @click="changeRoom(item)" class="chat-box"
+               :class="{'chat-box-simple': item !== room, 'chat-box-check': item === room}">
+            <img :src="item.toUser.avatarUrl"
+                 style="width: 45px;height: 45px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;"
+                 alt="avatar"/>
+            <div style="flex: 1 0 0">
+              <el-text truncated>{{ item.toUser.nickname }}</el-text>
+              <br>
+              <el-text truncated>{{ item.message.content }}</el-text>
+            </div>
+            <div style="font-size: 12px;display: flex;align-items: flex-start;height: 45px">
+              {{ formatDate(item.message.createTime) }}
+            </div>
           </div>
         </el-badge>
 
-        <div v-else @click="changeRoom(item)" style="
-      cursor:pointer;background-color: #4C4D4F; box-sizing: border-box;margin-bottom: 16px;
-      padding:20px;display: flex;gap: 10px;align-items: center;border-bottom: 1px solid #eeeeee">
-          <img :src="item.toUser.avatarUrl" style="width: 35px;height: 35px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;" alt="avatar"/>
+        <div v-else @click="changeRoom(item)" class="chat-box"
+             :class="{'chat-box-simple': item !== room, 'chat-box-check': item === room}">
+          <img :src="item.toUser.avatarUrl"
+               style="width: 45px;height: 45px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;"
+               alt="avatar"/>
+          <div style="flex: 1 0 0">
+            <el-text truncated>{{ item.toUser.nickname }}</el-text>
+            <br>
+            <el-text truncated>{{ item.message.content }}</el-text>
+          </div>
+          <div style="font-size: 12px;display: flex;align-items: flex-start;height: 45px">
+            {{ formatDate(item.message.createTime) }}
+          </div>
         </div>
       </template>
-
-    </div>
+    </el-scrollbar>
 
     <div v-if="room" style="background-color: rgba(0, 0, 0, 0.7);flex: 1 0 0;box-sizing: border-box;padding: 20px;">
       <div>
@@ -35,11 +53,19 @@
                    marginBottom: index < messages.length - 1 ? '8px' : '0'
                 }"
                 v-if="msg.createBy === userinfo.id">
-              <div style="background-color: #323232f2;box-sizing: border-box;padding: .625rem .9375rem;font-size: .9rem;border-radius: .75rem;">
-                {{ msg.content }}
-              </div>
-
-              <img :src="userinfo.avatarUrl" style="width: 35px;height: 35px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;" alt="avatar"/>
+              <el-tooltip
+                  class="box-item"
+                  :content="formatDateMessage(msg.createTime)"
+                  placement="left"
+              >
+                <div
+                    style="background-color: #323232f2;box-sizing: border-box;padding: .625rem .9375rem;font-size: .9rem;border-radius: .75rem;">
+                  {{ msg.content }}
+                </div>
+              </el-tooltip>
+              <img :src="userinfo.avatarUrl"
+                   style="width: 35px;height: 35px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;"
+                   alt="avatar"/>
             </div>
             <div
                 :style="{
@@ -49,10 +75,19 @@
                    marginBottom: index < messages.length - 1 ? '8px' : '0'
                 }"
                 v-else>
-              <img :src="room.toUser.avatarUrl" style="width: 35px;height: 35px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;" alt="avatar"/>
-              <div style="background-color: #323232f2;box-sizing: border-box;padding: .625rem .9375rem;font-size: .9rem;border-radius: .75rem;">
-                {{ msg.content }}
-              </div>
+              <img :src="room.toUser.avatarUrl"
+                   style="width: 35px;height: 35px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;"
+                   alt="avatar"/>
+              <el-tooltip
+                  class="box-item"
+                  :content="formatDateMessage(msg.createTime)"
+                  placement="right"
+              >
+                <div
+                    style="background-color: #323232f2;box-sizing: border-box;padding: .625rem .9375rem;font-size: .9rem;border-radius: .75rem;">
+                  {{ msg.content }}
+                </div>
+              </el-tooltip>
             </div>
           </div>
         </el-scrollbar>
@@ -175,6 +210,77 @@ onBeforeUnmount(() => {
     socket.value.close();
   }
 });
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const today = new Date();
+  const newDate = new Date(dateString)
+
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+
+  if (date.getTime() === today.getTime()) {
+    // 如果是今天，获取时分秒
+    const hours = newDate.getUTCHours().toString().padStart(2, '0');
+    const minutes = newDate.getUTCMinutes().toString().padStart(2, '0');
+    const seconds = newDate.getUTCSeconds().toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  } else {
+    // 否则，获取年月日
+    const year = newDate.getUTCFullYear();
+    const month = (newDate.getUTCMonth() + 1).toString().padStart(2, '0'); // 月份从0开始
+    const day = newDate.getUTCDate().toString().padStart(2, '0');
+    return `${year}/${month}/${day}`;
+  }
+}
+
+const formatDateMessage = (dateString) => {
+  const date = new Date(dateString);
+  const today = new Date();
+  const newDate = new Date(dateString)
+
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+  const hours = newDate.getUTCHours().toString().padStart(2, '0');
+  const minutes = newDate.getUTCMinutes().toString().padStart(2, '0');
+  const seconds = newDate.getUTCSeconds().toString().padStart(2, '0');
+  if (date.getTime() === today.getTime()) {
+    // 如果是今天，获取时分秒
+    return `${hours}:${minutes}:${seconds}`;
+  } else {
+    // 否则，获取年月日
+    const year = newDate.getUTCFullYear();
+    const month = (newDate.getUTCMonth() + 1).toString().padStart(2, '0'); // 月份从0开始
+    const day = newDate.getUTCDate().toString().padStart(2, '0');
+    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+  }
+}
 </script>
+
+<style scoped>
+.chat-box {
+  cursor: pointer;
+  box-sizing: border-box;
+  padding: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.chat-box:not(:last-child) {
+  margin-bottom: 16px;
+}
+
+.chat-box-simple {
+  background-color: #4C4D4F;
+  border: 1px solid #eeeeee
+}
+
+.chat-box-check {
+  color: #1c1c1c;
+  background-color: #eeeeee;
+  border: 1px solid #4C4D4F
+}
+</style>
 
 

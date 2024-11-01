@@ -65,7 +65,7 @@ public class SocketServer {
                     });
 
             ChannelFuture f = b.bind(PORT).sync();
-            log.info("服务器启动，等待用户连接...");
+            log.info("聊天服务启动，等待用户连接...");
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
@@ -126,6 +126,7 @@ public class SocketServer {
                                     roomChannelMap.put(account.getId(), ctx.channel());
                                 }
                                 userChannels.put(room, roomChannelMap);
+                                log.info("id为：{}的用户在房间：{}中。", account.getId(), room.getId());
 
                                 if (!toUserId.equals(account.getId())) { // 检查发起人和接收人是否一致
                                     // 寻找接收人的channel，如果在线则放入房间
