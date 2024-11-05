@@ -26,6 +26,11 @@ public class RoomController {
         return roomService.getRoomList();
     }
 
+    @GetMapping("/getRoomInfoById/{id}")
+    public RestBean<RoomVO> getRoomInfoById(@PathVariable Integer id) {
+        return roomService.getRoomInfoById(id);
+    }
+
     @PostMapping("/save")
     public RestBean<Room> save(@RequestBody Room room) {
         roomService.save(room);

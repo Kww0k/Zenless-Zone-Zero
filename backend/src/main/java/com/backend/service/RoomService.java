@@ -17,4 +17,6 @@ import java.util.List;
 public interface RoomService extends IService<Room> {
 
     RestBean<List<RoomVO>> getRoomList();
+
+    RestBean<RoomVO> getRoomInfoById(Integer id);
 }

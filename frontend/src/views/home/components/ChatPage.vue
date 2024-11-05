@@ -142,7 +142,12 @@ onMounted(() => {
                   if (room) {
                     room.message = result.data
                   } else {
-                    // todo 新增一个roomList，得获取
+                    request.get("/room/getRoomInfoById/" + result.data.roomId).then(res => {
+                      if (res.code === 200)
+                        roomList.value.push(res.data)
+                      else
+                        ElMessage.error(res.message)
+                    })
                   }
                   messages.value.push(result.data);
                 } else {
@@ -151,7 +156,12 @@ onMounted(() => {
                     room.message = result.data
                     room.countMessage += 1
                   } else {
-                    // todo 新增一个roomList，得获取
+                    request.get("/room/getRoomInfoById/" + result.data.roomId).then(res => {
+                      if (res.code === 200)
+                        roomList.value.push(res.data)
+                      else
+                        ElMessage.error(res.message)
+                    })
                   }
                 }
                 roomList.value.sort((a, b) => {

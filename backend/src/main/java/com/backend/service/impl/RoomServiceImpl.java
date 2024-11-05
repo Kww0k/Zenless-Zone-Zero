@@ -44,38 +44,47 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
 
         return RestBean.success(
                 rooms.stream()
-                        .map(room -> {
-                            Account account;
-                            if (room.getUserOne().equals(userId))
-                                account = accountMapper.selectById(room.getUserTwo());
-                            else
-                                account = accountMapper.selectById(room.getUserOne());
-
-                            LambdaQueryWrapper<Message> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-                            lambdaQueryWrapper
-                                    .eq(Message::getRoomId, room.getId())
-                                    .and(wq -> wq
-                                            .eq(Message::getCreateBy, userId)
-                                            .or()
-                                            .eq(Message::getToUserId, userId))
-                                    .orderByDesc(Message::getCreateTime)
-                                    .last("limit 1");
-                            Message message = messageMapper.selectOne(lambdaQueryWrapper);
-
-                            LambdaQueryWrapper<Message> countWrapper = new LambdaQueryWrapper<>();
-                            countWrapper
-                                    .eq(Message::getRoomId, room.getId())
-                                    .and(wq -> wq
-                                            .eq(Message::getCreateBy, userId)
-                                            .or()
-                                            .eq(Message::getToUserId, userId))
-                                    .and(wq -> wq
-                                            .eq(Message::getReadOne, userId))
-                                            .or()
-                                            .eq(Message::getReadTwo, userId);
-                            return new RoomVO(room, account, message, messageMapper.selectCount(countWrapper));
-                        })
+                        .map(room -> getRoomVO(room, userId))
                         .toList()
         );
+    }
+
+    @Override
+    public RestBean<RoomVO> getRoomInfoById(Integer id) {
+        Integer userId = securityUtil.getUserId();
+        Room room = this.getById(id);
+        return RestBean.success(getRoomVO(room, userId));
+    }
+
+    private RoomVO getRoomVO(Room room, Integer userId) {
+        Account account;
+        if (room.getUserOne().equals(userId))
+            account = accountMapper.selectById(room.getUserTwo());
+        else
+            account = accountMapper.selectById(room.getUserOne());
+
+        LambdaQueryWrapper<Message> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper
+                .eq(Message::getRoomId, room.getId())
+                .and(wq -> wq
+                        .eq(Message::getCreateBy, userId)
+                        .or()
+                        .eq(Message::getToUserId, userId))
+                .orderByDesc(Message::getCreateTime)
+                .last("limit 1");
+        Message message = messageMapper.selectOne(lambdaQueryWrapper);
+
+        LambdaQueryWrapper<Message> countWrapper = new LambdaQueryWrapper<>();
+        countWrapper
+                .eq(Message::getRoomId, room.getId())
+                .and(wq -> wq
+                        .eq(Message::getCreateBy, userId)
+                        .or()
+                        .eq(Message::getToUserId, userId))
+                .and(wq -> wq
+                        .eq(Message::getReadOne, userId))
+                .or()
+                .eq(Message::getReadTwo, userId);
+        return new RoomVO(room, account, message, messageMapper.selectCount(countWrapper));
     }
 }
