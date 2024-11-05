@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * (Room)表服务实现类
@@ -45,6 +46,7 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
         return RestBean.success(
                 rooms.stream()
                         .map(room -> getRoomVO(room, userId))
+                        .filter(Objects::nonNull)
                         .toList()
         );
     }
@@ -53,7 +55,11 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
     public RestBean<RoomVO> getRoomInfoById(Integer id) {
         Integer userId = securityUtil.getUserId();
         Room room = this.getById(id);
-        return RestBean.success(getRoomVO(room, userId));
+        RoomVO roomVO = getRoomVO(room, userId);
+        if (roomVO != null)
+            return RestBean.success(roomVO);
+        else
+            return RestBean.failure(404, "房间信息未找到");
     }
 
     private RoomVO getRoomVO(Room room, Integer userId) {
@@ -73,7 +79,11 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
                 .orderByDesc(Message::getCreateTime)
                 .last("limit 1");
         Message message = messageMapper.selectOne(lambdaQueryWrapper);
-
+        if (message == null)
+            if (room.getUserOne().equals(userId))
+                message = new Message();
+            else
+                return null;
         LambdaQueryWrapper<Message> countWrapper = new LambdaQueryWrapper<>();
         countWrapper
                 .eq(Message::getRoomId, room.getId())
