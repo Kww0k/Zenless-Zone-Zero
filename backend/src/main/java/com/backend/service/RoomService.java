@@ -19,4 +19,6 @@ public interface RoomService extends IService<Room> {
     RestBean<List<RoomVO>> getRoomList();
 
     RestBean<RoomVO> getRoomInfoById(Integer id);
+
+    RestBean<Room> saveRoom(Room room);
 }

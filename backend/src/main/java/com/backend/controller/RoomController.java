@@ -33,7 +33,6 @@ public class RoomController {
 
     @PostMapping("/save")
     public RestBean<Room> save(@RequestBody Room room) {
-        roomService.save(room);
-        return RestBean.success(room);
+        return roomService.saveRoom(room);
     }
 }

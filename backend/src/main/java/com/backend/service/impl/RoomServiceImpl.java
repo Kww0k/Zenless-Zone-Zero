@@ -62,6 +62,24 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
             return RestBean.failure(404, "房间信息未找到");
     }
 
+    @Override
+    public RestBean<Room> saveRoom(Room room) {
+        LambdaQueryWrapper<Room> wrapper = new LambdaQueryWrapper<>();
+        wrapper
+                .eq(Room::getUserOne, room.getUserOne())
+                .eq(Room::getUserTwo, room.getUserTwo())
+                .or()
+                .eq(Room::getUserOne, room.getUserTwo())
+                .eq(Room::getUserTwo, room.getUserOne());
+        Room room1 = this.getOne(wrapper);
+        if (room1 != null) {
+            return RestBean.success(room1);
+        } else {
+            save(room);
+            return RestBean.success(room);
+        }
+    }
+
     private RoomVO getRoomVO(Room room, Integer userId) {
         Account account;
         if (room.getUserOne().equals(userId))
@@ -80,10 +98,8 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
                 .last("limit 1");
         Message message = messageMapper.selectOne(lambdaQueryWrapper);
         if (message == null)
-            if (room.getUserOne().equals(userId))
-                message = new Message();
-            else
-                return null;
+            return null;
+
         LambdaQueryWrapper<Message> countWrapper = new LambdaQueryWrapper<>();
         countWrapper
                 .eq(Message::getRoomId, room.getId())
