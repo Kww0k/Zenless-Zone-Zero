@@ -4,10 +4,12 @@ import com.backend.domain.RestBean;
 import com.backend.domain.entity.Account;
 import com.backend.domain.entity.AccountEvent;
 import com.backend.domain.entity.Event;
+import com.backend.domain.entity.Tag;
 import com.backend.domain.vo.ListVO;
 import com.backend.mapper.AccountEventMapper;
 import com.backend.mapper.AccountMapper;
 import com.backend.mapper.EventMapper;
+import com.backend.mapper.TagMapper;
 import com.backend.service.EventService;
 import com.backend.utils.MapperUtil;
 import com.backend.utils.SecurityUtil;
@@ -21,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,16 +41,19 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
     private final AccountEventMapper accountEventMapper;
 
+    private final TagMapper tagMapper;
+
     private final SecurityUtil securityUtil;
 
     private final MapperUtil mapperUtil;
 
     @Override
-    public RestBean<ListVO<Event>> listEvent(Integer pageNum, Integer pageSize, String title) {
+    public RestBean<ListVO<Event>> listEvent(Integer pageNum, Integer pageSize, String title, Integer tagId) {
         // 创建分页对象
         Page<Event> page = new Page<>(pageNum, pageSize);
         // 创建查询条件
-        LambdaQueryWrapper<Event> queryWrapper = new LambdaQueryWrapper<Event>().like(StringUtils.hasText(title), Event::getTitle, title);
+        LambdaQueryWrapper<Event> queryWrapper = new LambdaQueryWrapper<Event>().like(StringUtils.hasText(title), Event::getTitle, title)
+                .eq(Objects.nonNull(tagId), Event::getTagId, tagId);
         // 执行分页查询
         Page<Event> coursePage = page(page, queryWrapper);
 
@@ -56,8 +62,15 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         Set<Integer> userIdSet = records.stream().map(Event::getCreateBy).collect(Collectors.toSet());
         Map<Integer, Account> accountMap = mapperUtil.mapToIdMap(accountMapper, userIdSet, Account::getId);
 
+        Set<Integer> tagIdSet = records.stream().map(Event::getTagId).collect(Collectors.toSet());
+        Map<Integer, Tag> tagMap = mapperUtil.mapToIdMap(tagMapper, tagIdSet, Tag::getId);
+
         List<Event> list = coursePage.getRecords()
-                .stream().peek(event -> event.setCreator(accountMap.get(event.getCreateBy()))).toList();
+                .stream().peek(event ->
+                        event
+                                .setCreator(accountMap.get(event.getCreateBy()))
+                                .setTag(Objects.equals(0, event.getTagId()) ? "学生个人发起" : tagMap.get(event.getTagId()).getName())
+                ).toList();
 
         return RestBean.success(new ListVO<>(coursePage.getTotal(), list));
     }

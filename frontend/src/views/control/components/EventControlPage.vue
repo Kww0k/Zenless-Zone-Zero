@@ -55,6 +55,7 @@ const total = ref(0)
 const form = reactive({
   id: '',
   title: '',
+  tagId: '',
   content: '',
   preview: '',
   startTime: '',
@@ -65,6 +66,7 @@ const form = reactive({
 })
 const searchQuery = ref('')
 const pageNum = ref(1)
+const tagList = ref()
 
 const handleCurrentChange = (index) => {
   pageNum.value = index
@@ -73,6 +75,9 @@ const handleCurrentChange = (index) => {
 
 onMounted(() => {
   getList()
+  request.get('/tag/listTag').then(res => {
+    tagList.value = res.data
+  })
 })
 
 const getList = () => {
@@ -88,6 +93,7 @@ const getList = () => {
 const close = () => {
   dialog.value = false
   form.id = ''
+  form.tagId = ''
   form.title= ''
   form.content= ''
   form.preview= ''
@@ -127,6 +133,7 @@ const updateDialog = (row) => {
   form.id = row.id
   form.preview = row.preview
   form.title = row.title
+  form.tagId = row.tagId
   form.location = row.location
   form.startTime = row.startTime
   form.endTime = row.endTime
@@ -190,8 +197,8 @@ const changeExamine = (row) => {
       </template>
     </el-table-column>
     <el-table-column prop="location" label="举办地" />
-    <el-table-column prop="startTime" label="开始时间" />
-    <el-table-column prop="endTime" label="结束时间" />
+    <el-table-column prop="tag" label="组织机构" />
+
 
     <el-table-column prop="examine" label="是否过审">
       <template v-slot:default="scope">
@@ -226,14 +233,14 @@ const changeExamine = (row) => {
       width="1000"
       :before-close="close"
   >
-      <el-row :gutter="20"  style="margin-bottom: 20px">
-        <el-col :span="6">
+      <div style="margin-bottom: 20px;display: grid;grid-gap: 10px;grid-template-columns: repeat(5, 1fr);">
+        <div style="width: 100%">
           <el-input placeholder="请输入活动标题" v-model="form.title"/>
-        </el-col>
-        <el-col :span="6">
+        </div>
+        <div style="width: 100%">
           <el-input placeholder="请输入活动举办地点" v-model="form.location"/>
-        </el-col>
-        <el-col :span="6">
+        </div>
+        <div style="width: 100%">
           <el-date-picker
               style="width: 100%"
               v-model="form.startTime"
@@ -243,8 +250,8 @@ const changeExamine = (row) => {
               align="right"
               clearable
           ></el-date-picker>
-        </el-col>
-        <el-col :span="6">
+        </div>
+        <div style="width: 100%">
           <el-date-picker
               style="width: 100%"
               v-model="form.endTime"
@@ -254,8 +261,18 @@ const changeExamine = (row) => {
               align="right"
               clearable
           ></el-date-picker>
-        </el-col>
-      </el-row>
+        </div>
+        <div style="width: 100%">
+          <el-select  v-model="form.tagId" placeholder="请选择发起组织" style="width: 100%;">
+            <el-option
+                v-for="item in tagList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+            />
+          </el-select>
+        </div>
+      </div>
       <el-row style="margin-bottom: 20px" :gutter="20">
       <el-col :span="8">
         <div style="height: 40px;font-size: 18px;">请上传封面图</div>

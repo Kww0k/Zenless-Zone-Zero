@@ -37,6 +37,8 @@ public class Event  {
 
     private Integer view;
 
+    private Integer tagId;
+
     /**
      * 开始时间
      */
@@ -75,5 +77,8 @@ public class Event  {
 
     @TableField(exist = false)
     private String timePeriod;
+
+    @TableField(exist = false)
+    private String tag;
 
 }

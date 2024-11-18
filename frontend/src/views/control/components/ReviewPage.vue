@@ -71,7 +71,6 @@ const formatDate = (row) => {
     <el-input placeholder="搜索评论" v-model="searchQuery" style="width: 240px; margin-right: 10px;"></el-input>
     <el-button type="primary" @click="getList" plain>搜索</el-button>
     <el-button type="warning" @click="resize" plain>重置</el-button>
-    <el-button type="success" @click="dialog = true" plain>新增</el-button>
   </div>
 
   <el-table border stripe :data="tableData" style="width: 100%;margin-bottom: 20px">

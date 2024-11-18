@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface EventService extends IService<Event> {
 
-    RestBean<ListVO<Event>> listEvent(Integer pageNum, Integer pageSize, String title);
+    RestBean<ListVO<Event>> listEvent(Integer pageNum, Integer pageSize, String title, Integer tagId);
 
     RestBean<Void> saveEvent(Event event);
 

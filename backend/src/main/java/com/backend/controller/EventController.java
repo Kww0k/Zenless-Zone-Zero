@@ -18,8 +18,8 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping("/list")
-    public RestBean<ListVO<Event>> listEvent(Integer pageNum, Integer pageSize, String title) {
-        return eventService.listEvent(pageNum, pageSize, title);
+    public RestBean<ListVO<Event>> listEvent(Integer pageNum, Integer pageSize, String title, Integer tagId) {
+        return eventService.listEvent(pageNum, pageSize, title, tagId);
     }
 
     @PostMapping("/save")

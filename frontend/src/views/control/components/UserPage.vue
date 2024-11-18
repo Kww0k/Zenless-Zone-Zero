@@ -28,7 +28,6 @@ onMounted(() => {
 const getList = () => {
   request.get('/account/list?pageSize=5&pageNum=' + pageNum.value + '&name=' + searchQuery.value).then(res => {
     if (res.code === 200) {
-      console.log(res.data)
       tableData.value = res.data.list
       total.value = res.data.total
     } else
@@ -123,7 +122,7 @@ const save = () => {
   <el-dialog
       v-model="dialog"
       :title="form.formType !== 'update' ? '新增用户' : '更新用户'"
-      width="600"
+      width="500"
       :before-close="close"
   >
     <el-form :model="form" label-width="auto">

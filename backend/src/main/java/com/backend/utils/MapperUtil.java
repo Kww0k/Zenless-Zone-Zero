@@ -15,6 +15,7 @@ public class MapperUtil {
 
     public <K, V> Map<K, V> mapToIdMap(BaseMapper<V> mapper, Set<K> idSet, SFunction<V, K> idFunction) {
         List<V> entityList = mapper.selectList(new LambdaQueryWrapper<V>().in(idFunction, idSet));
+
         return entityList.stream().collect(Collectors.toMap(idFunction, entity -> entity));
     }
 

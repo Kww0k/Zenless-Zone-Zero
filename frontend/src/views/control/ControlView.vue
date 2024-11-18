@@ -21,6 +21,7 @@ const menuItems= [
     title: "系统管理",
     children: [
       { name: "用户管理", path: '/control/user' },
+      { name: "组织管理", path: '/control/tag' },
       { name: "消息管理", path: '/control/message' },
     ]
   }
@@ -34,10 +35,26 @@ onMounted(() => {
 
 <template>
   <div style="width: 100%;height: 55px;box-sizing: border-box;border-bottom: 1px solid #4C4D4F">
-    <div style="width: 1500px;margin: auto;display: flex;align-items: center;justify-content: space-between">
+    <div style="width: 1300px;margin: auto;display: flex;align-items: center;justify-content: space-between;height: 100%">
+      <div>
+        <div @click="router.push('/home')" style="cursor:pointer;">
+          <i style="font-size: 36px;height: 36px" class="fa-brands fa-rust"></i>
+        </div>
+      </div>
+      <div style="display: flex">
+        特别鸣谢：
+        <div style="display: flex;gap: 5px">
+          <div>
+            <i class="fa-brands fa-vuejs"></i>
+          </div>
+          <div>
+            <i class="fa-brands fa-java"></i>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-<div style="width: 1500px;display: flex;margin: 20px auto auto;">
+<div style="width: 1300px;display: flex;margin: 20px auto auto;">
   <el-scrollbar style="width: 300px;box-sizing: border-box;padding: 20px 20px 60px;height: calc(100vh - 75px)">
     <div v-for="(item, index) in menuItems" :key="index" class="menu-item">
       <div class="menu-title">{{ item.title }}</div>
@@ -47,7 +64,7 @@ onMounted(() => {
       </div>
     </div>
   </el-scrollbar>
-  <el-scrollbar style="width: 1200px;box-sizing: border-box;padding: 20px 20px 60px;;height: calc(100vh - 75px);">
+  <el-scrollbar style="width: 1000px;box-sizing: border-box;padding: 20px 20px 60px;;height: calc(100vh - 75px);">
     <router-view/>
   </el-scrollbar>
 </div>

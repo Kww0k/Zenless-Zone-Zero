@@ -11,6 +11,7 @@ import EventControlPage from "@/views/control/components/EventControlPage.vue";
 import ReviewPage from "@/views/control/components/ReviewPage.vue";
 import ChatPage from "@/views/home/components/ChatPage.vue";
 import MessagePage from "@/views/control/components/MessagePage.vue";
+import TagPage from "@/views/control/components/TagPage.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +58,11 @@ const router = createRouter({
                     path: '/control/user',
                     name: 'controlUserPage',
                     component: UserPage
+                },
+                {
+                    path: '/control/tag',
+                    name: 'controlTagPage',
+                    component: TagPage
                 },
                 {
                     path: '/control/event',

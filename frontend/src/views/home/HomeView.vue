@@ -27,11 +27,11 @@ const list = [
   <el-watermark :width="800" :gap="[0, -120]" style="background-color: #010101;height: 100vh" :font="font" :content="['Campus activity', 'Student']">
     <div style="width: 100%;height: 80px;background-color: black;z-index: 100;position: absolute">
       <div style="width: 1400px; height: 100%;margin: auto;display: flex;align-items: center;justify-content: space-between;position: relative">
-        <div style="display: flex;align-items: center;gap: 20px;cursor: pointer">
-          <div @click="router.push('/home')">
+        <div style="display: flex;align-items: center;gap: 20px">
+          <div @click="router.push('/home')" style="cursor: pointer">
             <i style="font-size: 36px;height: 36px" class="fa-brands fa-rust"></i>
           </div>
-          <div @click="router.push('/level')" style="padding: 2px 20px 2px 2px;border: 2px solid #343434;height: 40px;box-sizing: border-box;background-color: #202020;border-radius: 20px;display:flex;align-items: center;gap: 2px">
+          <div @click="router.push('/level')" style="padding: 2px 20px 2px 2px;border: 2px solid #343434;height: 40px;box-sizing: border-box;background-color: #202020;border-radius: 20px;display:flex;align-items: center;gap: 2px;cursor: pointer">
             <img :src="userinfo.avatarUrl" style="width: 35px;height: 35px;border-radius: 50%;box-sizing: border-box;border: 2px solid black;" alt="avatar"/>
             <div >
               {{ userinfo.nickname }}
