@@ -58,7 +58,7 @@ const resize = () => {
   </div>
 
   <div style="margin-bottom: 20px;">
-    <el-input placeholder="搜索评论" v-model="searchQuery" style="width: 240px; margin-right: 10px;"></el-input>
+    <el-input placeholder="搜索消息" v-model="searchQuery" style="width: 240px; margin-right: 10px;"></el-input>
     <el-button type="primary" @click="getList" plain>搜索</el-button>
     <el-button type="warning" @click="resize" plain>重置</el-button>
   </div>

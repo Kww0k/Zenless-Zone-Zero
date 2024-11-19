@@ -1,7 +1,6 @@
 package com.backend.controller;
 
 import com.backend.domain.RestBean;
-import com.backend.domain.entity.Account;
 import com.backend.domain.entity.Message;
 import com.backend.domain.vo.ListVO;
 import com.backend.service.MessageService;
