@@ -2,3 +2,5 @@
 .idea
 backend/target
 backend/src/test
+
+backend/src/main/resources/file
