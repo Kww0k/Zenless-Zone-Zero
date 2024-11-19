@@ -19,6 +19,7 @@ onMounted(() => {
 const list = [
   { name: "推送", value: '/home' },
   { name: "日程", value: '/event' },
+  { name: "聊天", value: '/chat' },
   { name: "个人中心", value: '/level' },
 ];
 </script>
@@ -44,7 +45,7 @@ const list = [
                :key="item.value"
                @click="router.push(item.value)"
                :class="[
-         currentRoute.path === item.value || (currentRoute.path === '/chat' && item.value === '/level') ? 'node-active' : 'node',
+         currentRoute.path === item.value || (item.value === '/level' && currentRoute.path.includes('/level')) ? 'node-active' : 'node',
          {
            'first-node': index === 0,
            'last-node': index === list.length - 1,
@@ -98,7 +99,7 @@ const list = [
 }
 
 .wrap {
-  width: 500px;
+  width: 600px;
   height: 40px;
   display: flex;
 }

@@ -5,13 +5,17 @@ import EventPage from "@/views/home/components/EventPage.vue";
 import ControlView from "@/views/control/ControlView.vue";
 import UserPage from "@/views/control/components/UserPage.vue";
 import ControlPage from "@/views/control/components/ControlPage.vue";
-import LevelPage from "@/views/home/components/LevelPage.vue";
+
 import LoginView from "@/views/login/LoginView.vue";
 import EventControlPage from "@/views/control/components/EventControlPage.vue";
 import ReviewPage from "@/views/control/components/ReviewPage.vue";
 import ChatPage from "@/views/home/components/ChatPage.vue";
 import MessagePage from "@/views/control/components/MessagePage.vue";
 import TagPage from "@/views/control/components/TagPage.vue";
+import LevelView from "@/views/home/components/level/LevelView.vue";
+import FriendPage from "@/views/home/components/level/components/FriendPage.vue";
+import MyEventPage from "@/views/home/components/level/components/MyEventPage.vue";
+import LevelPage from "@/views/home/components/level/components/LevelPage.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,15 +28,32 @@ const router = createRouter({
                 path: '',
                 name: 'homePage',
                 component: HomePage
-            },
+                 },
                 {
                     path: '/event',
                     name: 'eventPage',
                     component: EventPage
                 }, {
                     path: '/level',
-                    name: 'levelPage',
-                    component: LevelPage
+                    name: 'level',
+                    component: LevelView,
+                    children: [
+                        {
+                            path: '',
+                            name: 'levelPage',
+                            component: LevelPage
+                        },
+                        {
+                            path: '/level/friend',
+                            name: 'friend',
+                            component: FriendPage
+                        },
+                        {
+                            path: '/level/event',
+                            name: 'myEvent',
+                            component: MyEventPage
+                        },
+                    ]
                 }, {
                     path: '/chat',
                     name: 'chat',

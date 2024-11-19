@@ -110,8 +110,10 @@ onMounted(() => {
   request.get("/room/getRoomList").then(res => {
     if (res.code === 200) {
       roomList.value = res.data
+      console.log(roomList.value)
       if (roomList.value.length > 0) {
         room.value = res.data[0]
+        console.log(111)
         request.get("/message/listMessage/" + room.value.room.id).then(res => {
           if (res.code === 200) {
             messages.value = res.data

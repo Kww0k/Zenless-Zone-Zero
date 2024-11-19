@@ -3,7 +3,7 @@
 </script>
 
 <template>
-个人中心
+2
 </template>
 
 <style scoped>
