@@ -22,7 +22,7 @@ const menuItems= [
     children: [
       { name: "用户管理", path: '/control/user' },
       { name: "组织管理", path: '/control/tag' },
-      { name: "消息管理", path: '/control/message' },
+      // { name: "消息管理", path: '/control/message' },
     ]
   }
 ]

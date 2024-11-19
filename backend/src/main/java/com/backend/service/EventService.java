@@ -19,6 +19,8 @@ public interface EventService extends IService<Event> {
 
     RestBean<ListVO<Event>> listEvent(Integer pageNum, Integer pageSize, String title, Integer tagId);
 
+    RestBean<List<Event>> myList();
+
     RestBean<Void> saveEvent(Event event);
 
     RestBean<Void> deleteEvent(Integer id);
@@ -32,4 +34,5 @@ public interface EventService extends IService<Event> {
     RestBean<List<Account>> listPlayerByEventId(Integer eventId);
 
     RestBean<List<Event>> listEventForPlayer();
+
 }

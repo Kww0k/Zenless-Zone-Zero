@@ -22,6 +22,11 @@ public class EventController {
         return eventService.listEvent(pageNum, pageSize, title, tagId);
     }
 
+    @GetMapping("/myList")
+    public RestBean<List<Event>> myList() {
+        return eventService.myList();
+    }
+
     @PostMapping("/save")
     public RestBean<Void> saveEvent(@RequestBody Event event) {
         return eventService.saveEvent(event);

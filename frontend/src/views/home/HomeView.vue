@@ -19,7 +19,6 @@ onMounted(() => {
 const list = [
   { name: "推送", value: '/home' },
   { name: "日程", value: '/event' },
-  { name: "聊天", value: '/chat' },
   { name: "个人中心", value: '/level' },
 ];
 </script>
@@ -99,7 +98,7 @@ const list = [
 }
 
 .wrap {
-  width: 600px;
+  width: 500px;
   height: 40px;
   display: flex;
 }

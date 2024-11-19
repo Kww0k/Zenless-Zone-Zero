@@ -4,7 +4,7 @@ import router from "@/router/index.js";
 const currentRoute = router.currentRoute
 const menu = [
   { name: "个人中心", value: '/level' },
-  { name: "好友列表", value: '/level/friend' },
+  // { name: "好友列表", value: '/level/friend' },
   { name: "活动管理", value: '/level/event' },
 ];
 </script>
@@ -26,9 +26,9 @@ const menu = [
 
 <style scoped>
 .side-item {
-  height: 50px;
+  height: 60px;
   width: 100%;
-  border-radius: 25px;
+  border-radius: 30px;
   background-color: black;
   box-sizing: border-box;
   border: 2px solid black;
@@ -42,12 +42,13 @@ const menu = [
   height: 100%;
   color: white;
   font-weight: bold;
-  border-radius: 23px;
+  border-radius: 28px;
   border: 4px solid #313131;
   box-sizing: border-box;
   align-items: center;
   justify-content: space-between;
-  padding-left: 16px;
+  padding-left: 20px;
+  font-size: 18px;
   padding-right: 20px;
   display: flex;
   transition: border-color 0.3s ease; /* 添加过渡效果 */

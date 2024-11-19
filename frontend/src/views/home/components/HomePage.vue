@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref, reactive, onBeforeUnmount, shallowRef} from 'vue'
+import {onMounted, ref, reactive, onBeforeUnmount, shallowRef, watch} from 'vue'
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
@@ -205,11 +205,26 @@ const outEvent = () => {
       ElMessage.error(res.message)
   })
 }
+
+const scrollbarRef = ref()
+const topIsShow = ref(false)
+
+const scroll = ({ scrollTop }) => {
+  topIsShow.value = scrollTop > 0;
+
+}
+
+const scrollToTop = () => {
+  const scrollEl = scrollbarRef.value;
+  if (scrollEl) {
+    scrollEl.scrollTo({ top: 0, behavior: 'smooth' }); // 平滑滚动到顶部
+  }
+};
 </script>
 
 <template>
   <div style="width: 100%;height: 100%;position: relative">
-    <el-scrollbar ref="scrollbarRef" style="width: 1200px; margin: auto; height: 100%;position: relative">
+    <el-scrollbar @scroll="scroll" ref="scrollbarRef" style="width: 1200px; margin: auto; height: 100%;position: relative">
       <div
           v-masonry
           transition-duration="0.3s"
@@ -282,7 +297,7 @@ const outEvent = () => {
                 </div>
                 <div
                     style="color: black;height: 16px;border-radius: 10px;background-color: #5e5e5e;font-size: 12px;margin-top: 4px;padding-right: 8px;padding-left: 8px;width: fit-content">
-                  <i class="fa-brands fa-gratipay" style="margin-right: 4px"></i>2024
+                  <i class="fa-regular fa-eye" style="margin-right: 4px"></i> {{ dialogInfo.view }}
                 </div>
               </div>
               <div style="font-size: 12px;color: #5e5e5e">
@@ -290,8 +305,9 @@ const outEvent = () => {
                   <i class="fa-solid fa-clock"></i>
                   {{ dialogInfo.startTime }} ~ {{ dialogInfo.endTime }}
                 </div>
-                <div style="height: 16px;display: flex;align-items: center;gap: 4px;margin-top: 4px">
+                <div style="height: 16px;display: flex;align-items: center;gap: 6px;margin-top: 4px">
                   <i class="fa-solid fa-map-location-dot"></i>{{ dialogInfo.location }}
+                  <i class="fas fa-users"></i>{{ dialogInfo.tag }}
                 </div>
               </div>
             </div>
@@ -430,6 +446,11 @@ const outEvent = () => {
 
       </el-dialog>
     </el-scrollbar>
+
+    <div v-if="topIsShow" class="edit" @click="scrollToTop" style="bottom: 90px">
+      <i style="font-size: 20px;" class="fa-solid fa-arrows-up-to-line"></i>
+    </div>
+
     <div class="edit" @click="addDialog = true">
       <i style="font-size: 20px;" class="fa-solid fa-pen-to-square"></i>
     </div>
