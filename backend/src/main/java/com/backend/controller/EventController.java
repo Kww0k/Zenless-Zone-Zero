@@ -22,6 +22,11 @@ public class EventController {
         return eventService.listEvent(pageNum, pageSize, title, tagId);
     }
 
+    @GetMapping("/controlList")
+    public RestBean<ListVO<Event>> controlListEvent(Integer pageNum, Integer pageSize, String title, Integer tagId) {
+        return eventService.controlListEvent(pageNum, pageSize, title, tagId);
+    }
+
     @GetMapping("/myList")
     public RestBean<List<Event>> myList() {
         return eventService.myList();

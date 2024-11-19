@@ -52,7 +52,38 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         // 创建分页对象
         Page<Event> page = new Page<>(pageNum, pageSize);
         // 创建查询条件
-        LambdaQueryWrapper<Event> queryWrapper = new LambdaQueryWrapper<Event>().like(StringUtils.hasText(title), Event::getTitle, title)
+        LambdaQueryWrapper<Event> queryWrapper = new LambdaQueryWrapper<Event>()
+                .eq(Event::getExamine, "yes")
+                .like(StringUtils.hasText(title), Event::getTitle, title)
+                .eq(Objects.nonNull(tagId), Event::getTagId, tagId);
+        // 执行分页查询
+        Page<Event> coursePage = page(page, queryWrapper);
+
+        List<Event> records = coursePage.getRecords();
+
+        Set<Integer> userIdSet = records.stream().map(Event::getCreateBy).collect(Collectors.toSet());
+        Map<Integer, Account> accountMap = mapperUtil.mapToIdMap(accountMapper, userIdSet, Account::getId);
+
+        Set<Integer> tagIdSet = records.stream().map(Event::getTagId).collect(Collectors.toSet());
+        Map<Integer, Tag> tagMap = mapperUtil.mapToIdMap(tagMapper, tagIdSet, Tag::getId);
+
+        List<Event> list = coursePage.getRecords()
+                .stream().peek(event ->
+                        event
+                                .setCreator(accountMap.get(event.getCreateBy()))
+                                .setTag(Objects.equals(0, event.getTagId()) ? "学生个人发起" : tagMap.get(event.getTagId()).getName())
+                ).toList();
+
+        return RestBean.success(new ListVO<>(coursePage.getTotal(), list));
+    }
+
+    @Override
+    public RestBean<ListVO<Event>> controlListEvent(Integer pageNum, Integer pageSize, String title, Integer tagId) {
+        // 创建分页对象
+        Page<Event> page = new Page<>(pageNum, pageSize);
+        // 创建查询条件
+        LambdaQueryWrapper<Event> queryWrapper = new LambdaQueryWrapper<Event>()
+                .like(StringUtils.hasText(title), Event::getTitle, title)
                 .eq(Objects.nonNull(tagId), Event::getTagId, tagId);
         // 执行分页查询
         Page<Event> coursePage = page(page, queryWrapper);

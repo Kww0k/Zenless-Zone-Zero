@@ -81,7 +81,7 @@ onMounted(() => {
 })
 
 const getList = () => {
-  request.get('/event/list?pageSize=5&pageNum=' + pageNum.value + '&title=' + searchQuery.value).then(res => {
+  request.get('/event/controlList?pageSize=5&pageNum=' + pageNum.value + '&title=' + searchQuery.value).then(res => {
     if (res.code === 200) {
       tableData.value = res.data.list
       total.value = res.data.total

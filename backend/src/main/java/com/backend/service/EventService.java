@@ -19,6 +19,7 @@ public interface EventService extends IService<Event> {
 
     RestBean<ListVO<Event>> listEvent(Integer pageNum, Integer pageSize, String title, Integer tagId);
 
+    RestBean<ListVO<Event>> controlListEvent(Integer pageNum, Integer pageSize, String title, Integer tagId);
     RestBean<List<Event>> myList();
 
     RestBean<Void> saveEvent(Event event);

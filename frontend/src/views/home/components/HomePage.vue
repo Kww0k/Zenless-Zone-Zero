@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref, reactive, onBeforeUnmount, shallowRef, watch} from 'vue'
+import {onMounted, ref, reactive, onBeforeUnmount, shallowRef} from 'vue'
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
