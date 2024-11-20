@@ -4,10 +4,12 @@ import com.backend.domain.LoginUser;
 import com.backend.domain.RestBean;
 import com.backend.domain.entity.Account;
 import com.backend.domain.entity.AccountEvent;
+import com.backend.domain.vo.AccountAuthVO;
 import com.backend.domain.vo.ListVO;
 import com.backend.mapper.AccountEventMapper;
 import com.backend.mapper.AccountMapper;
 import com.backend.service.AccountService;
+import com.backend.utils.BeanCopyUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,6 +26,8 @@ import org.springframework.util.StringUtils;
 public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> implements AccountService {
 
     private final AccountEventMapper accountEventMapper;
+
+    private final BeanCopyUtils beanCopyUtils;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -59,14 +63,14 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
     @Override
     @Transactional
-    public RestBean<Void> saveAccount(Account account) {
+    public RestBean<AccountAuthVO> saveAccount(Account account) {
         if (StringUtils.hasText(account.getPassword())) {
             account.setPassword(new BCryptPasswordEncoder().encode(account.getPassword()));
         } else {
             account.setPassword(null);
         }
         if (saveOrUpdate(account))
-            return RestBean.success();
+            return RestBean.success(beanCopyUtils.copyBean(baseMapper.selectById(account.getId()), AccountAuthVO.class));
         else
             return RestBean.failure(400, "出现异常");
     }

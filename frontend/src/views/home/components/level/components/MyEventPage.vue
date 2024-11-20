@@ -284,33 +284,16 @@ const open = (id) => {
 :deep(.el-dialog .el-dialog__header) {
   display: none;
 }
+
 .avatar-uploader .avatar {
   width: 309px;
   object-fit: cover;
   height: 402px;
   display: block;
 }
+
 </style>
 
 <style>
-.avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
-}
 
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
-}
-
-.el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 309px;
-  height: 402px;
-  text-align: center;
-}
 </style>

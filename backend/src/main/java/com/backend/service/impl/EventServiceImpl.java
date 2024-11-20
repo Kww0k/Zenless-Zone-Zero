@@ -128,6 +128,25 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     }
 
     @Override
+    public RestBean<List<Event>> myJoinList() {
+        Integer userId = securityUtil.getUserId();
+        List<Event> records = baseMapper.listMyEventByUserId(userId);
+
+        Set<Integer> userIdSet = records.stream().map(Event::getCreateBy).collect(Collectors.toSet());
+        Map<Integer, Account> accountMap = mapperUtil.mapToIdMap(accountMapper, userIdSet, Account::getId);
+
+        Set<Integer> tagIdSet = records.stream().map(Event::getTagId).collect(Collectors.toSet());
+        Map<Integer, Tag> tagMap = mapperUtil.mapToIdMap(tagMapper, tagIdSet, Tag::getId);
+
+        return RestBean.success(records
+                .stream().peek(event ->
+                        event
+                                .setCreator(accountMap.get(event.getCreateBy()))
+                                .setTag(Objects.equals(0, event.getTagId()) ? "学生个人发起" : tagMap.get(event.getTagId()).getName()))
+                .toList());
+    }
+
+    @Override
     @Transactional
     public RestBean<Void> saveEvent(Event event) {
         if (saveOrUpdate(event))

@@ -39,4 +39,16 @@ public interface EventMapper extends BaseMapper<Event> {
                 CURDATE() BETWEEN DATE(event.start_time) AND DATE(event.end_time);
             """)
     List<Event> listEventByUserId(Integer userId);
+
+    @Select("""
+            SELECT
+                *
+            FROM
+                event
+            LEFT JOIN
+                event.account_event ae ON event.id = ae.event_id
+            WHERE
+                ae.account_id = #{userId}
+            """)
+    List<Event> listMyEventByUserId(Integer userId);
 }

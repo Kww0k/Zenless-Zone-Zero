@@ -32,6 +32,11 @@ public class EventController {
         return eventService.myList();
     }
 
+    @GetMapping("/myJoinList")
+    public RestBean<List<Event>> myJoinList() {
+        return eventService.myJoinList();
+    }
+
     @PostMapping("/save")
     public RestBean<Void> saveEvent(@RequestBody Event event) {
         return eventService.saveEvent(event);
