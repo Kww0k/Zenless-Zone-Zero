@@ -2,6 +2,7 @@ package com.backend.controller;
 
 import com.backend.domain.RestBean;
 import com.backend.domain.entity.Account;
+import com.backend.domain.entity.AccountEvent;
 import com.backend.domain.entity.Event;
 import com.backend.domain.vo.ListVO;
 import com.backend.service.EventService;
@@ -76,5 +77,10 @@ public class EventController {
     @GetMapping("/listEventForPlayer")
     public RestBean<List<Event>> listEventForPlayer() {
         return eventService.listEventForPlayer();
+    }
+
+    @PostMapping("/removePlayer")
+    public RestBean<Void> removePlayer(@RequestBody AccountEvent accountEvent) {
+        return eventService.removePlayer(accountEvent);
     }
 }

@@ -195,4 +195,13 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     public RestBean<List<Event>> listEventForPlayer() {
         return RestBean.success(baseMapper.listEventByUserId(securityUtil.getUserId()));
     }
+
+    @Override
+    public RestBean<Void> removePlayer(AccountEvent accountEvent) {
+        LambdaQueryWrapper<AccountEvent> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AccountEvent::getAccountId, accountEvent.getAccountId());
+        wrapper.eq(AccountEvent::getEventId, accountEvent.getEventId());
+        accountEventMapper.delete(wrapper);
+        return RestBean.success();
+    }
 }

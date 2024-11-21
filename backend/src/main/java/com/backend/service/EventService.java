@@ -2,6 +2,7 @@ package com.backend.service;
 
 import com.backend.domain.RestBean;
 import com.backend.domain.entity.Account;
+import com.backend.domain.entity.AccountEvent;
 import com.backend.domain.entity.Event;
 import com.backend.domain.vo.ListVO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -37,4 +38,5 @@ public interface EventService extends IService<Event> {
     RestBean<List<Event>> listEventForPlayer();
 
 
+    RestBean<Void> removePlayer(AccountEvent accountEvent);
 }

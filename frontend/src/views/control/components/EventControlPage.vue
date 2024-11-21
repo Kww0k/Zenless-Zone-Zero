@@ -167,6 +167,44 @@ const changeExamine = (row) => {
       ElMessage.error(res.message)
   })
 }
+
+const accountList = ref([])
+const accountDialog = ref(false)
+const dialogEventId = ref()
+
+const getAccountList = (id) => {
+  request.get('/event/listPlayerByEventId?eventId=' + id).then(res => {
+    if (res.code === 200) {
+      dialogEventId.value = id
+      accountList.value = res.data
+      accountDialog.value = true
+    }
+    else
+      ElMessage.error(res.message)
+  })
+}
+
+const removeAccount = (id) => {
+  const form = {
+    'accountId': id,
+    'eventId': dialogEventId.value
+  }
+
+  request.post('/event/removePlayer', form).then(res => {
+    if (res.code === 200) {
+      ElMessage.success('移除成功')
+      getAccountList(dialogEventId.value)
+    } else
+      ElMessage.error(res.message)
+  })
+}
+
+const closeAccount = () => {
+  accountList.value = []
+  accountDialog.value = false
+  dialogEventId.value = ''
+}
+
 </script>
 
 <template>
@@ -212,8 +250,9 @@ const changeExamine = (row) => {
       </template>
     </el-table-column>
 
-    <el-table-column label="操作" width="200">
+    <el-table-column label="操作" width="320">
       <template v-slot:default="scope">
+        <el-button @click="getAccountList(scope.row.id)" type="success"><el-icon style="margin-right: 6px"><List /></el-icon>报名情况</el-button>
         <el-button @click="updateDialog(scope.row)" type="success"><el-icon style="margin-right: 6px"><InfoFilled /></el-icon>修改</el-button>
         <el-popconfirm @confirm="removeItem(scope.row.id)" title="你确定要删除这条信息吗?">
           <template #reference>
@@ -227,6 +266,29 @@ const changeExamine = (row) => {
   <div style="width: 100%;display: flex;justify-content: center">
     <el-pagination v-model="pageNum" :page-size="5" @current-change="handleCurrentChange" layout="prev, pager, next" :total="total" />
   </div>
+
+  <el-dialog
+      v-model="accountDialog"
+      width="600"
+      title="活动报名情况"
+      :before-close="closeAccount"
+  >
+    <el-table border stripe :data="accountList" style="width: 100%;margin-bottom: 20px">
+      <el-table-column prop="id" label="id" />
+      <el-table-column prop="username" label="username" />
+      <el-table-column prop="nickname" label="nickname" />
+      <el-table-column label="操作" >
+        <template v-slot:default="scope">
+          <el-popconfirm @confirm="removeAccount(scope.row.id)" title="你确定要移除这个成员吗?">
+            <template #reference>
+              <el-button type="danger"><el-icon style="margin-right: 6px"><CircleCloseFilled /></el-icon>移除</el-button>
+            </template>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-dialog>
+
   <el-dialog
       v-model="dialog"
       :title="form.formType !== 'update' ? '新增活动' : '更新活动'"
